@@ -16,13 +16,14 @@ def find_mode(numbers):
     
     # Find the number(s) with the highest frequency
     max_frequency = max(frequency.values())
-    print(frequency)
     return list(frequency.keys())[list(frequency.values()).index(max_frequency)]
 
-img = pyautogui.screenshot()
+#img = pyautogui.screenshot()
+img = cv2.imread("google.png")
 img = cv2.cvtColor(np.array(img), cv2.COLOR_BGR2GRAY)
 edges = cv2.Canny(img,100,200)
 contours, _ = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+print(len(contours))
 
 img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 widths = np.zeros(len(contours))
@@ -56,6 +57,13 @@ while x < len(cols) - 1:
     if (cols[x+1] - cols[x]) < (max / 2):
         cols.pop(x+1)
         removed += 1
+    elif (cols[x+1] - cols[x]) > (max + 10):
+        if (x < (len(cols) / 2)):
+            cols.pop(x)
+            removed += 1
+        else:
+            cols.pop(x+1)
+            removed += 1
     else:
         x += 1
 x = 0
@@ -63,6 +71,13 @@ while x < len(rows) - 1:
     if (rows[x+1] - rows[x]) < (max / 2):
         rows.pop(x+1)
         removed += 1
+    elif (rows[x+1] - rows[x]) > (max + 10):
+        if (x < (len(rows) / 2)):
+            rows.pop(x)
+            removed += 1
+        else:
+            rows.pop(x+1)
+            removed += 1
     else:
         x += 1
 #debugging var
@@ -81,15 +96,24 @@ cleared = []
 bigFound = False
 bombsFound = 0
 corners = np.empty((height,width), dtype=object)
+cv2.imwrite("example.png")
+cv2.imshow("Display window", img)
+k = cv2.waitKey(0)
+
+if width < 10 or height < 10:
+    print("Couldn't detect grid, make sure grid isn't too small and is larger than 10x10")
+    exit(1)
 
 for i in range(0, width):
     for j in range(0, height):
         corners[j][i] = (cols[i]+1,rows[j]+1)
 
 print(width, "times", height, "is", width * height)
+print(rows)
 print(squareSize)
 print(count)
 print("Removed: ", removed)
 #pyautogui.moveTo(corners[2][2])
-cv2.imshow("Display window", img)
-k = cv2.waitKey(0)
+
+#https://stackoverflow.com/questions/39308030/how-do-i-increase-the-contrast-of-an-image-in-python-opencv
+

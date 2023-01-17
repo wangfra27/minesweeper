@@ -54,12 +54,6 @@ image = cv2.dilate(image, kernele)
 image = cv2.erode(image, kerneli)
 image = cv2.dilate(image, kernele)
 
-
-""" edges = cv2.Canny(image,100,200)
-contours, _ = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-cv2.drawContours(image, contours, -1, (0,0,0), 1) """
-
-
 text = pytesseract.image_to_string(image, lang='lets', config='--psm 6') #6 or 7, 10 for single digit
 print(text)
 

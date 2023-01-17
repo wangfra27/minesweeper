@@ -6,6 +6,7 @@ import random
 import math
 import sys
 import time
+import pytesseract
 from pynput.mouse import Button, Controller as MouseController
 from pynput.keyboard import Listener, Controller as KeyboardController
 import threading
@@ -31,8 +32,7 @@ possible = []
 global bigFound
 bigFound = False
 
-global bombsFound
-bombsFound = 0
+global totalBombs
 global flags
 global games
 
@@ -81,8 +81,9 @@ def readGrid():
     global squareSize
     global cleared
     global bigFound
-    global bombsFound
+    global totalBombs
     img = pyautogui.screenshot()
+    totalBombs = bombsCount(img)
     img = cv2.cvtColor(np.array(img), cv2.COLOR_BGR2GRAY)
     edges = cv2.Canny(img,100,200)
     contours, _ = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -116,7 +117,6 @@ def readGrid():
     squareSize = max
     cleared = []
     bigFound = False
-    bombsFound = 0
     corners = np.empty((height,width), dtype=object)
 
     cols = sorted(cols)
@@ -125,6 +125,58 @@ def readGrid():
     for i in range(0, width):
         for j in range(0, height):
             corners[j][i] = (cols[i]+1,rows[j]+1)
+
+def bombsCount(image):
+    gray = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2GRAY)
+    ret, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+    kernel = np.ones((3,3), np.uint8)
+    erosion = cv2.erode(thresh, kernel, iterations=1)
+    dilation = cv2.dilate(erosion, kernel, iterations=1)
+    edges = cv2.Canny(dilation, 100, 200)
+
+    contours, hierarchy = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    loc = (math.inf, math.inf, math.inf, math.inf)
+    for contour in contours:
+        x, y, w, h = cv2.boundingRect(contour)
+        if w >= 50 and w <= 100 and h >= 30 and h <= 70:
+            if x < loc[0]:
+                loc = (x,y,w,h)
+
+    img = np.array(image)
+    image = img[loc[1]+1:loc[1]+loc[3], loc[0]+1:loc[0]+loc[2]]
+
+    #image = image[0:loc[3], 0:int(loc[2]/3)]
+
+    temp = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    low = (0, 0, 0)
+    high = (0, 0, 0)
+    mask=cv2.inRange(temp,low,high)
+    image[mask>0]=(255,255,255)
+
+    temp = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    low = (100, 0, 0)
+    high = (140, 255, 100)
+    mask=cv2.inRange(temp,low,high)
+    image[mask>0]=(255,255,255)
+
+    temp = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    image[mask>0]=(255,255,255)
+    low = (100, 10, 0)
+    high = (140, 255, 255)
+    mask=cv2.inRange(temp,low,high)
+    image[mask>0]=(0,0,0)
+
+    kerneli = np.ones((3,3),np.uint8)
+    image = cv2.erode(image, kerneli)
+    kernele = np.ones((5,5),np.uint8)
+    image = cv2.dilate(image, kernele)
+    image = cv2.erode(image, kerneli)
+    image = cv2.dilate(image, kernele)
+
+    text = pytesseract.image_to_string(image, lang='lets', config='--psm 6')
+    if text.isdigit():
+        return text
+    return 999
 
 def getColor(x,y, im1):
     #print("get Color ", x, y)
@@ -231,7 +283,7 @@ def educatedGuess():
     #IMPLEMENT ERROR CHECKING FOR EMPTY LISTS
     #2d-temp for inserting
     global possible
-    global bombsFound
+    global totalBombs
     possible = []
     #3d
     global aPossible
@@ -279,6 +331,11 @@ def educatedGuess():
         possible = []
     #print(aPossible)
     
+    if len(aPossible) == 1:
+        for p in aPossible[0]:
+            if (sum(p) > totalBombs):
+                aPossible.remove(p)
+
     #counts how many times each square is a mine
     #2d array
     totals = []
@@ -324,7 +381,7 @@ def educatedGuess():
                     mouse.move(corners[y][x][0], corners[y][x][1])
                     mouse.click(Button.right, 1)
                 grid[y][x] = -1
-                bombsFound += 1
+                totalBombs -= 1
                 change = True
 
     #if there are no ones or zeros, find the most extreme
@@ -348,7 +405,7 @@ def educatedGuess():
                 mouse.move(corners[y][x][0], corners[y][x][1])
                 mouse.click(Button.right, 1)
             grid[y][x] = -1
-            bombsFound += 1
+            totalBombs -= 1
         else: #click smallest
             x = sloc[0]
             y = sloc[1]
@@ -490,7 +547,7 @@ def activeNum(x,y,trash):
 def advTactics1():
     #print("advtactics1")
     global flags
-    global bombsFound
+    global totalBombs
     change = False
     tempGrid = grid.copy()
     #make a tempgrid with minimized numbers
@@ -536,7 +593,7 @@ def advTactics1():
                                         #pyautogui.rightClick(corners[j][i][0], corners[j][i][1])
                                         mouse.move(corners[j][i][0], corners[j][i][1])
                                         mouse.click(Button.right, 1)
-                                    bombsFound += 1
+                                    totalBombs -= 1
                                     grid[j][i] = -1
                                     tempGrid[j][i] = -1
     return change
@@ -632,7 +689,7 @@ def notTouching(x,y,c,d):
 
 def flagAround(x,y):
     global flags
-    global bombsFound
+    global totalBombs
     flag = 0
     blanks = 0
     change = False
@@ -654,7 +711,7 @@ def flagAround(x,y):
                         mouse.move(corners[b][a][0], corners[b][a][1])
                         mouse.click(Button.right, 1)
                     grid[b][a] = -1
-                    bombsFound += 1
+                    totalBombs -= 1
     return change
 
 def clickAround(x,y):
@@ -747,7 +804,6 @@ def main():
         if pyautogui.locateOnScreen('online/win.png', confidence=0.9) is not None:
             print("I won GGEZ")
         print("Unlucky: ", unlucky)
-        print("Bombs Found: ", bombsFound)
 
     if games == 'w':#play til win
         while(pyautogui.locateOnScreen('online/win.png', confidence=0.9) is None):
@@ -771,7 +827,7 @@ def main():
                     break
             if pyautogui.locateOnScreen('online/sad.png', confidence=0.9) is not None:
                 losses += 1
-                print("Bombs Found: ", bombsFound)
+                print("Bombs Left: ", totalBombs)
                 #pyautogui.click(x,y)
                 mouse.move(x,y)
                 mouse.click(Button.left, 1)
@@ -810,7 +866,7 @@ def main():
                     mouse.click(Button.left, 1)
                     time.sleep(sleep)
                     losses += 1
-                    print("Bombs Found: ", bombsFound)
+                    print("Bombs Left: ", totalBombs)
                     print("Oops I messed up")
                     print("Unlucky: ", unlucky, "Losses: ", losses, " Wins: ", wins)
                 if pyautogui.locateOnScreen('online/win.png', confidence=0.9) is not None:
@@ -819,7 +875,6 @@ def main():
                     mouse.click(Button.left, 1)
                     time.sleep(sleep)
                     wins += 1
-                    print("Bombs Found: ", bombsFound)
                     print("I won GGEZ")
                     print("Unlucky: ", unlucky, "Losses: ", losses, " Wins: ", wins)
             #time.sleep(0.1)
