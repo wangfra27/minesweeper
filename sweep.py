@@ -7,8 +7,8 @@ import math
 import sys
 import time
 import pytesseract
-from pynput.mouse import Button, Controller as MouseController
-from pynput.keyboard import Listener, Controller as KeyboardController
+#from pynput.mouse import Button, Controller as MouseController
+#from pynput.keyboard import Listener, Controller as KeyboardController
 import threading
 #screenWidth = 1920
 #screenHeight = 1080
@@ -221,9 +221,9 @@ def randomClick():
     while (grid[y][x] != math.inf):
         x = random.randint(0, width-1)
         y = random.randint(0, height-1)
-    #pyautogui.click(corners[y][x][0], corners[y][x][1])
-    mouse.move(corners[y][x][0], corners[y][x][1])
-    mouse.click(Button.left, 1)
+    pyautogui.click(corners[y][x][0], corners[y][x][1])
+    #mouse.move(corners[y][x][0], corners[y][x][1])
+    #mouse.click(Button.left, 1)
     im1 = pyautogui.screenshot()
     if not updateTile(x,y,im1):
         return False
@@ -364,9 +364,9 @@ def educatedGuess():
             if totals[i][j] == 0:
                 x = sections[i][j][0]
                 y = sections[i][j][1]
-                #pyautogui.click(corners[y][x][0], corners[y][x][1])
-                mouse.move(corners[y][x][0], corners[y][x][1])
-                mouse.click(Button.left, 1)
+                pyautogui.click(corners[y][x][0], corners[y][x][1])
+                #mouse.move(corners[y][x][0], corners[y][x][1])
+                #mouse.click(Button.left, 1)
                 im1 = pyautogui.screenshot()
                 #print("Clicking: ", x, y)
                 if not updateTile(x,y,im1):
@@ -377,9 +377,9 @@ def educatedGuess():
                 y = sections[i][j][1]
                 #print("Flagging: ", x, y)
                 if flags == True:
-                    #pyautogui.rightClick(corners[y][x][0], corners[y][x][1])
-                    mouse.move(corners[y][x][0], corners[y][x][1])
-                    mouse.click(Button.right, 1)
+                    pyautogui.rightClick(corners[y][x][0], corners[y][x][1])
+                    #mouse.move(corners[y][x][0], corners[y][x][1])
+                    #mouse.click(Button.right, 1)
                 grid[y][x] = -1
                 totalBombs -= 1
                 change = True
@@ -401,18 +401,18 @@ def educatedGuess():
             y = bloc[1]
             #print("Flagging: ", x, y)
             if flags == True:
-                #pyautogui.rightClick(corners[y][x][0], corners[y][x][1])
-                mouse.move(corners[y][x][0], corners[y][x][1])
-                mouse.click(Button.right, 1)
+                pyautogui.rightClick(corners[y][x][0], corners[y][x][1])
+                #mouse.move(corners[y][x][0], corners[y][x][1])
+                #mouse.click(Button.right, 1)
             grid[y][x] = -1
             totalBombs -= 1
         else: #click smallest
             x = sloc[0]
             y = sloc[1]
             #print("Clicking: ", x, y)
-            #pyautogui.click(corners[y][x][0], corners[y][x][1])
-            mouse.move(corners[y][x][0], corners[y][x][1])
-            mouse.click(Button.left, 1)
+            pyautogui.click(corners[y][x][0], corners[y][x][1])
+            #mouse.move(corners[y][x][0], corners[y][x][1])
+            #mouse.click(Button.left, 1)
             im1 = pyautogui.screenshot()
             if not updateTile(x,y,im1):
                 return False
@@ -590,9 +590,9 @@ def advTactics1():
                                 for i,j in ind:
                                     #print("Flagged ", i, j)
                                     if flags == True:
-                                        #pyautogui.rightClick(corners[j][i][0], corners[j][i][1])
-                                        mouse.move(corners[j][i][0], corners[j][i][1])
-                                        mouse.click(Button.right, 1)
+                                        pyautogui.rightClick(corners[j][i][0], corners[j][i][1])
+                                        #mouse.move(corners[j][i][0], corners[j][i][1])
+                                        #mouse.click(Button.right, 1)
                                     totalBombs -= 1
                                     grid[j][i] = -1
                                     tempGrid[j][i] = -1
@@ -668,9 +668,9 @@ def click11(i,j):
     if inrange(i, j) and grid[j][i] == math.inf:
         change = True
         #print("click ", i, j)
-        #pyautogui.click(corners[j][i][0], corners[j][i][1])
-        mouse.move(corners[j][i][0], corners[j][i][1])
-        mouse.click(Button.left, 1)
+        pyautogui.click(corners[j][i][0], corners[j][i][1])
+        #mouse.move(corners[j][i][0], corners[j][i][1])
+        #mouse.click(Button.left, 1)
         im1 = pyautogui.screenshot()
         if not updateTile(i,j,im1): 
             return False, change
@@ -707,9 +707,9 @@ def flagAround(x,y):
             for b in range (y-1, y+2):
                 if inrange(a,b) and grid[b][a] == math.inf:
                     if flags == True:
-                        #pyautogui.rightClick(corners[b][a][0], corners[b][a][1])
-                        mouse.move(corners[b][a][0], corners[b][a][1])
-                        mouse.click(Button.right, 1)
+                        pyautogui.rightClick(corners[b][a][0], corners[b][a][1])
+                        #mouse.move(corners[b][a][0], corners[b][a][1])
+                        #mouse.click(Button.right, 1)
                     grid[b][a] = -1
                     totalBombs -= 1
     return change
@@ -730,15 +730,15 @@ def clickAround(x,y):
         for a in range (x-1, x+2):
             for b in range (y-1, y+2):
                 if inrange(a,b) and grid[b][a] == math.inf:
-                    #pyautogui.click(corners[b][a][0], corners[b][a][1])
-                    mouse.move(corners[b][a][0], corners[b][a][1])
-                    mouse.click(Button.left, 1)
+                    pyautogui.click(corners[b][a][0], corners[b][a][1])
+                    #mouse.move(corners[b][a][0], corners[b][a][1])
+                    #mouse.click(Button.left, 1)
                     im1 = pyautogui.screenshot()
                     if not updateTile(a,b,im1):
                         return False, change
     return True, change
 
-def on_press(key):
+""" def on_press(key):
     global paused
     global thread
 
@@ -746,7 +746,7 @@ def on_press(key):
     if thread is None:
         # run long-running `function` in separated thread
         thread = threading.Thread(target=function)
-        thread.start()
+        thread.start() """
 
 def main():
     global flags
@@ -754,7 +754,7 @@ def main():
     global sleep
     global paused
 
-    keyboard = KeyboardController()
+    #keyboard = KeyboardController()
 
     if str(sys.argv[1]) == 'f':
         flags = True
@@ -776,7 +776,7 @@ def main():
     
     sleep = int(sys.argv[3])
 
-    x,y = pyautogui.locateCenterOnScreen('online/smile.png', confidence=0.9)
+    x,y = pyautogui.locateCenterOnScreen('smile.png', confidence=0.9)
     losses = 0
     wins = 0
     unlucky = 0
@@ -787,34 +787,34 @@ def main():
             while(True):
                 if not randomClick():
                     unlucky += 1
-                    #pyautogui.click(x,y)
-                    mouse.move(x,y)
-                    mouse.click(Button.left, 1)
+                    pyautogui.click(x,y)
+                    #mouse.move(x,y)
+                    #mouse.click(Button.left, 1)
                     time.sleep(sleep)
                     break
                 if bigFound:
                     break
 
-        while(pyautogui.locateOnScreen('online/smile.png', confidence=0.9) is not None):
+        while(pyautogui.locateOnScreen('smile.png', confidence=0.9) is not None):
             if not makeClicks():
                 break
 
-        if pyautogui.locateOnScreen('online/sad.png', confidence=0.9) is not None:
+        if pyautogui.locateOnScreen('sad.png', confidence=0.9) is not None:
             print("Oops I messed up")
-        if pyautogui.locateOnScreen('online/win.png', confidence=0.9) is not None:
+        if pyautogui.locateOnScreen('win.png', confidence=0.9) is not None:
             print("I won GGEZ")
         print("Unlucky: ", unlucky)
 
     if games == 'w':#play til win
-        while(pyautogui.locateOnScreen('online/win.png', confidence=0.9) is None):
+        while(pyautogui.locateOnScreen('win.png', confidence=0.9) is None):
             restart = False
             readGrid()
             while(bigFound == False):
                 if not randomClick():
                     unlucky += 1
-                    #pyautogui.click(x,y)
-                    mouse.move(x,y)
-                    mouse.click(Button.left, 1)
+                    pyautogui.click(x,y)
+                    #mouse.move(x,y)
+                    #mouse.click(Button.left, 1)
                     time.sleep(sleep)
                     #print("Oops I messed up")
                     restart = True
@@ -822,15 +822,15 @@ def main():
             if restart:
                 continue
 
-            while(pyautogui.locateOnScreen('online/smile.png', confidence=0.9) is not None):
+            while(pyautogui.locateOnScreen('smile.png', confidence=0.9) is not None):
                 if not makeClicks():
                     break
-            if pyautogui.locateOnScreen('online/sad.png', confidence=0.9) is not None:
+            if pyautogui.locateOnScreen('sad.png', confidence=0.9) is not None:
                 losses += 1
                 print("Bombs Left: ", totalBombs)
-                #pyautogui.click(x,y)
-                mouse.move(x,y)
-                mouse.click(Button.left, 1)
+                pyautogui.click(x,y)
+                #mouse.move(x,y)
+                #mouse.click(Button.left, 1)
                 time.sleep(sleep)
                 #print("Oops I messed up")
         print("I won GGEZ")
@@ -847,32 +847,32 @@ def main():
                         print("Oops I messed up")
                         unlucky += 1
                         print("Unlucky: ", unlucky, "Losses: ", losses, " Wins: ", wins)
-                        #pyautogui.click(x,y)
-                        mouse.move(x,y)
-                        mouse.click(Button.left, 1)
+                        pyautogui.click(x,y)
+                        #mouse.move(x,y)
+                        #mouse.click(Button.left, 1)
                         time.sleep(sleep)
                         restart = True
                         break
                 if restart:
                     continue
 
-                while(pyautogui.locateOnScreen('online/smile.png', confidence=0.9) is not None):
+                while(pyautogui.locateOnScreen('smile.png', confidence=0.9) is not None):
                     if not makeClicks():
                         break
 
-                if pyautogui.locateOnScreen('online/sad.png', confidence=0.9) is not None:
-                    #pyautogui.click(x,y)
-                    mouse.move(x,y)
-                    mouse.click(Button.left, 1)
+                if pyautogui.locateOnScreen('sad.png', confidence=0.9) is not None:
+                    pyautogui.click(x,y)
+                    #mouse.move(x,y)
+                    #mouse.click(Button.left, 1)
                     time.sleep(sleep)
                     losses += 1
                     print("Bombs Left: ", totalBombs)
                     print("Oops I messed up")
                     print("Unlucky: ", unlucky, "Losses: ", losses, " Wins: ", wins)
-                if pyautogui.locateOnScreen('online/win.png', confidence=0.9) is not None:
-                    #pyautogui.click(x,y)
-                    mouse.move(x,y)
-                    mouse.click(Button.left, 1)
+                if pyautogui.locateOnScreen('win.png', confidence=0.9) is not None:
+                    pyautogui.click(x,y)
+                    #mouse.move(x,y)
+                    #mouse.click(Button.left, 1)
                     time.sleep(sleep)
                     wins += 1
                     print("I won GGEZ")
@@ -880,12 +880,12 @@ def main():
             #time.sleep(0.1)
 
 
-mouse = MouseController()
+#mouse = MouseController()
 paused = True
 thread = None
 
-with Listener(on_press=on_press) as listener:
-    listener.join()
+""" with Listener(on_press=on_press) as listener:
+    listener.join() """
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,28 @@
+Filter-P: I think its what I do, calculate all possible mine arrangements and find the square with the lowest chance of being a bomb. 
+
+Filter-Q: Based on "Constraint Satisfaction", which finds the number of "quanta" for each cell. Lowest Q-value is least constrained and least likely to be a mine. "linear equation system solver"
+
+To calculate Q-value, we represent the board as a series of equations: 
+x1+x2+x3=2 where x values are hidden squares that have a value of either 1 or 0 and 2 represents the open square to which these are all adjacent. We can use this to generate a set of binary matrices where each row represents a configuration and each column represents a cell on the board. We use "Gaussian elimination" to solve the matrices and calculate the Q-values. 
+
+Filter E: Estimates the expected number of squares that will be revealed by a given move. Assigns a value to each square. 
+
+E[b] = p(b) * (1 - q[b]) + (1 - p(b)) * q[b]
+
+
+Filter U: TBH IDFK Something like
+generates a set of candidate mine configurations, iterates through every unrevealed square and calculates if it can be a mine without violating any candidate configs. If it is a mine in exactly one(?) then it is guarenteed to be a mine. 
+
+
+
+
+
+#P-complete and co-NP-complete are different complexity classes, although they are both related to NP.
+
+#P is the class of decision problems that can be reduced to the problem of counting the number of accepting paths of a non-deterministic Turing machine in polynomial time. #P-complete problems are the hardest problems in #P, in the sense that any problem in #P can be reduced to a #P-complete problem in polynomial time.
+
+Co-NP, on the other hand, is the class of decision problems whose complements are in NP. That is, a problem is in co-NP if and only if the "no" instances can be verified in polynomial time. Co-NP-complete problems are the hardest problems in co-NP, in the sense that any problem in co-NP can be reduced to a co-NP-complete problem in polynomial time.
+
+The reason why you might hear some problems being called "co-NP-complete" instead of "#P-complete" is that some counting problems can be rephrased as decision problems about the absence of solutions. For example, the problem of determining whether a Boolean formula has exactly k satisfying assignments is a #P-complete problem, but its complement problem, which asks whether a formula has at most k-1 or at least k+1 satisfying assignments, is a co-NP-complete problem.
+
+In summary, #P-complete and co-NP-complete are two distinct classes of problems, although there is some overlap between them, and some problems may belong to both classes depending on how they are formulated.
